@@ -1,0 +1,26 @@
+{
+  "name": "pure_nodetext",
+  "version": "1.0.0",
+  "description": "a node test",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --inspect index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lzm320856/node-text.git"
+  },
+  "keywords": [
+    "node",
+    "text"
+  ],
+  "author": "linzm",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lzm320856/node-text/issues"
+  },
+  "homepage": "https://github.com/lzm320856/node-text#readme",
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
+}
