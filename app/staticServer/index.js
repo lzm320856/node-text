@@ -3,7 +3,10 @@
  */
 const path = require('path');
 const fs = require('fs');
-let getPath = url=>path.resolve(process.cwd(),'public',`.${url}.html`);
+let getPath = url=>{
+	if(!/\./.test(url)){url = `${url}.html`;}
+	return path.resolve(process.cwd(),'public',`.${url}`);
+}
 let staticFunc = (url)=>{
 	if(url=='/'){
 		url = '/index';
