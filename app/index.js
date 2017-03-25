@@ -3,18 +3,20 @@
  */
 /**主要核心入口..*/
 const fs = require("fs");
+const path = require('path');
+const staticServer = require('./staticServer')
 
 class App{
 	constructor(){
 
 	}
 	initServer(){
-
 		return (request,response)=>{
-			fs.readFile('./public/index.html','utf-8',(error,data)=>{
-				response.end(data);
-			})
+			let {url} = request;   //  解构赋值 => let url = request.url
+			let data = staticServer(url);
+			response.writeHead(200,'ok');
+			response.end(data);
 		}
 	}
 }
-module.exports = App;
+module.exports = new App();
