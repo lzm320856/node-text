@@ -1,24 +1,22 @@
 /*
- * Created by TAL on 2017/3/25.
+ * 静态资源服务器处理
  */
 const path = require('path');
 const fs = require('fs');
+
 let getPath = url=>{
 	if(!/\./.test(url)){url = `${url}.html`;}
 	return path.resolve(process.cwd(),'public',`.${url}`);
-}
+};
 let staticFunc = (url)=>{
-	if(url=='/'){
-		url = '/index';
-	}
-	let _path=getPath(url);
-	let body= '';
-	try{
-		body = fs.readFileSync(_path)
-	}catch(error){
-		body =`NOT FOUND`
-	}
-	return body;
+	return new Promise((resolve,reject)=>{
+		if(url=='/')  url = '/index';
+		let _path=getPath(url);
+		fs.readFile(_path,(err,data)=>{
+			if(err) return reject(`not found${err}`);
+			return resolve(data);
+		})
+	});
 };
 
-module.exports = staticFunc
+module.exports = staticFunc;
