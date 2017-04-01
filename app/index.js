@@ -1,31 +1,43 @@
-/**主要核心入口..*/
-const fs = require('fs');
-const path = require('path');
+/**主程序核心入口..*/
 const staticServer = require('./staticServer');
 const apiServer = require('./api');
+const urlParser = require('./urlParser');
 
 class App{
 	constructor(){
 
 	}
 	initServer(){
-		let _Headers = {'x-powered-by':'node.js'};
 		let correctResponse = (res,data,header) =>{
 			res.writeHead(200,'ok',header);
 			res.end(data);
 		};
 		return (request,response)=>{
-			let {url} = request;   //  解构赋值 => let url = request.url
-			if(url.match('.action')){
-				apiServer(url).then(data=>{
-					let _newHead = Object.assign({'Content-Type':'application/json'},_Headers);
-					correctResponse(response,JSON.stringify(data),_newHead);
-				});
-			}else{
-				staticServer(url).then(data=>{
-					correctResponse(response,data,_Headers);
-				});
-			}
+			let _Headers = {'x-powered-by':'node.js'};
+			request.context = {
+				body:'',
+				query:{},
+			};
+			urlParser(request).then(()=>{
+				return apiServer(request);
+			}).then(data=>{
+				if(!data){
+					return staticServer(request);
+				}else{
+					return data;
+				}
+			}).then(data =>{
+				let body = "";
+				if(data instanceof Buffer){
+					body = data;
+				}else {
+					_Headers = Object.assign(_Headers,{
+						"Content-Type":"application/json"
+					});
+					body = JSON.stringify(data);
+				}
+				correctResponse(response,body,_Headers)
+			})
 		}
 	}
 }

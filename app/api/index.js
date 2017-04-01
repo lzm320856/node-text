@@ -1,7 +1,9 @@
 /*
 **	API分发服务器
 */
-module.exports = (url)=>{
+module.exports = (request)=>{
+	let {url,method,context} = request;
+	method = method.toLowerCase();
 	let apiMap = {
 		"/user.action":{
 			"id":1,
@@ -11,5 +13,12 @@ module.exports = (url)=>{
 		},
 		"/list.action":["first-blood",'double-kill','holy-shit']
 	};
-	return Promise.resolve(apiMap[url]);
+	if(method == "get"){
+		return Promise.resolve(apiMap[url]);
+	}else if(method == "post"){
+		return new Promise((resolve,reject)=>{
+			let data = context.body;
+			data.code == '101' ? resolve(apiMap[url]) : resolve("forbidden");
+		})
+	}
 };

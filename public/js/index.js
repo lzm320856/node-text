@@ -1,3 +1,7 @@
+var postData = {
+	code:"101"
+};
+
 setTimeout(function(){
 	$.ajax({
 		url:'/list.action',
@@ -16,10 +20,14 @@ setTimeout(function(){
 	});
 	$.ajax({
 		url:'/user.action',
-		method:'get',
+		method:'post',
+		dataType:"json",
+		data:JSON.stringify(postData),
+		headers:{"content-type":"application/json"},
 		//返回数组
-		success:function(data) {
+		success:function(res) {
 			var str = '';
+			let data = res;
 			for (var key in data) {
 				str += '<li><span>' + key + ':</span><span>' + data[key] + '</span></li>';
 			}
@@ -29,4 +37,4 @@ setTimeout(function(){
 			console.log(error)
 		}
 	});
-},1000)
+},1000);
