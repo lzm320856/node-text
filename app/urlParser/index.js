@@ -4,7 +4,7 @@
 const querystring = require('querystring');
 const Url = require('url');
 
-module.exports = (ctx)=>{
+let urlParser = (ctx)=>{
 	let {req,reqCtx} = ctx;
 	let {url,method} = req;
 	method = method.toLowerCase();
@@ -27,3 +27,5 @@ module.exports = (ctx)=>{
 	});
 	// 处理 =》 只通知promise成功，若为get将query存入reqCtx的query中,若为post将data存入reqCtx的body中
 };
+
+module.exports = urlParser;

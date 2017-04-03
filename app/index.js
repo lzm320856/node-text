@@ -1,11 +1,20 @@
 /**主程序核心入口..*/
-const staticServer = require('./staticServer');
-const apiServer = require('./api');
-const urlParser = require('./urlParser');
 
 class App{
 	constructor(){
-
+		this.middlewareArr = [];
+		this.middlewareChain = Promise.resolve();
+	}
+	use(middleware){
+		this.middlewareArr.push(middleware);
+	}
+	composeMiddleware(context){
+		for(let middleware of this.middlewareArr){
+			this.middlewareChain = this.middlewareChain.then(()=>{
+				return middleware(context);
+			});
+		}
+		return this.middlewareChain;
 	}
 	initServer(){
 		let correctResponse = (res,data,header) =>{
@@ -13,26 +22,23 @@ class App{
 			res.end(data);
 		};
 		let _Headers = {'x-powered-by':'node.js'};
-		let ctx = {
-			req:request,
-			reqCtx:{
-				body:'',         //post的请求数据
-				query:{},        //处理客户端的get请求
-			},
-			res:response,
-			resCtx:{
-				headers:{},
-				body:''
-			}
-		};
-		
+
 		return (request,response)=>{
-			urlParser(ctx).then(()=>{
-				return apiServer(ctx);
-			}).then(()=>{
-				return staticServer(ctx);
-			}).then(() =>{
-				correctResponse(response,ctx.resCtx.body,_Headers);
+			let ctx = {
+				req:request,
+				reqCtx:{
+					body:'',         //post的请求数据
+					query:{},        //处理客户端的get请求
+				},
+				res:response,
+				resCtx:{
+					headers:{},
+					body:''
+				}
+			};
+			this.composeMiddleware(ctx).then(() =>{
+				let {body} = ctx.resCtx;
+				correctResponse(response,body,_Headers);
 			})
 		}
 	}

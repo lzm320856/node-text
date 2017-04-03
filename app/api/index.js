@@ -2,7 +2,7 @@
 **	API静态数据分发服务器
 *   只处理后缀为.action的请求，通过不同情况给res.ctx赋值
 */
-module.exports = (ctx)=>{
+let apiServer = (ctx)=>{
 	let { reqCtx,resCtx,res} = ctx;
 	let {url,method} = ctx.req;
 	method = method.toLowerCase();
@@ -25,6 +25,7 @@ module.exports = (ctx)=>{
 		}
 		res.setHeader("Content-Type","application/json");
 	}
-
 	return Promise.resolve();
 };
+
+module.exports = apiServer;

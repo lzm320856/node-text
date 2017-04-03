@@ -8,7 +8,7 @@ let getPath = url=>{
 	if(!/\./.test(url)){url = `${url}.html`;}
 	return path.resolve(process.cwd(),'public',`.${url}`);
 };
-let staticFunc = (ctx)=>{
+let staticServer = (ctx)=>{
 	let {req,resCtx} = ctx;
 	let {url} = req;
 	return Promise.resolve({
@@ -27,4 +27,4 @@ let staticFunc = (ctx)=>{
 	});
 };
 
-module.exports = staticFunc;
+module.exports = staticServer;
