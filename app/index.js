@@ -12,31 +12,27 @@ class App{
 			res.writeHead(200,'ok',header);
 			res.end(data);
 		};
+		let _Headers = {'x-powered-by':'node.js'};
+		let ctx = {
+			req:request,
+			reqCtx:{
+				body:'',         //post的请求数据
+				query:{},        //处理客户端的get请求
+			},
+			res:response,
+			resCtx:{
+				headers:{},
+				body:''
+			}
+		};
+		
 		return (request,response)=>{
-			let _Headers = {'x-powered-by':'node.js'};
-			request.context = {
-				body:'',
-				query:{},
-			};
-			urlParser(request).then(()=>{
-				return apiServer(request);
-			}).then(data=>{
-				if(!data){
-					return staticServer(request);
-				}else{
-					return data;
-				}
-			}).then(data =>{
-				let body = "";
-				if(data instanceof Buffer){
-					body = data;
-				}else {
-					_Headers = Object.assign(_Headers,{
-						"Content-Type":"application/json"
-					});
-					body = JSON.stringify(data);
-				}
-				correctResponse(response,body,_Headers)
+			urlParser(ctx).then(()=>{
+				return apiServer(ctx);
+			}).then(()=>{
+				return staticServer(ctx);
+			}).then(() =>{
+				correctResponse(response,ctx.resCtx.body,_Headers);
 			})
 		}
 	}
