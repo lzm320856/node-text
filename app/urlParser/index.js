@@ -12,11 +12,12 @@ let urlParser = (ctx)=>{
 		then:(resolve,reject)=>{
 			reqCtx.method = method;
 			if(method == "post"){
-				let data = '';
+				let data = [];
 				req.on('data',(chunk)=>{
-					data += chunk;
+					data.push(chunk);
 				}).on('end',()=>{
-					reqCtx.body = JSON.parse(data);
+					let endData = Buffer.concat(data).toString();
+					reqCtx.body = JSON.parse(endData);
 					resolve();
 				})
 			}else if(method == 'get'){
