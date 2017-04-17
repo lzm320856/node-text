@@ -7,33 +7,43 @@ const fs = require('fs');
 const path = require('path');
 const ejs = require('ejs');
 const mime = require('mime');
+const urlrewriteMap = require('./urlrewrite');
 
 module.exports = (ctx)=>{
 	let { req,resCtx } = ctx;
 	let { url } = req;
 	return Promise.resolve({
-		then:(resolve,reject)=>{
-			let urlMap = {
-				'/':{
-					viewName:'index.html'
-				},
-				'/about':{
-					viewName:'about.html'
-				},
-				'/list':{
-					viewName:'list.html'
+		then: (resolve, reject) => {
+			if(url.match('action') || url.match(/\./)){
+				resolve();
+			}else {
+				let viewPath = path.resolve(__dirname, 'ejs');
+				let ejsName = urlrewriteMap[url];
+				if (ejsName) {
+					let layoutPath = path.resolve(viewPath, 'layout.ejs');
+					let layoutHtml = fs.readFileSync(layoutPath, "utf-8");
+					let render = ejs.compile(layoutHtml,{
+						compileDebug:true,
+						filename:layoutPath,
+					});
+					let html = render({
+						templateName:ejsName,
+						authority:resCtx.authority
+					});
+					resCtx.body = html;
+					resCtx.headers = Object.assign(resCtx.headers, {
+						"content-type": "text/html"
+					});
+				}else {
+					resCtx.headers = Object.assign(resCtx.headers,{
+						"Location":'/'
+					});
+					resCtx.statusMessage = "Redirect";
+					resCtx.statusCode = 302;
+					resCtx.body = '';
 				}
-			};
-			let viewPath = path.resolve(process.cwd(),'public');
-			if(urlMap[url]){
-				let { viewName } = urlMap[url];
-				let htmlPath = path.resolve(viewPath,viewName);
-				let render = ejs.compile(fs.readFileSync(htmlPath,"utf-8"),{
-					compileDebug:true
-				});
-				resCtx.body = render({hello:"<script>alert(1)</script>"});
+				resolve();
 			}
-			resolve();
 		}
 	})
-};
+}

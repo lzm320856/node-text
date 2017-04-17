@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+    <title>hello</title>
+    <meta lang="zh-cn">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./dist/common.css">
+    <link rel="stylesheet" href="./dist/index.css">
+    <script src="./dist/common.js"></script>
+    <script src="./dist/index.js"></script>
+</head>
+<body>
+<div class="container">
+<header>
+    <nav>
+        <img class="header-logo" src="./img/logo.jpg"/>
+        <ul>
+            <li><a href="/">首页</a></li>
+            <li> <a href="/about">关于我</a></li>
+            <li><a href="/list">文章列表</a></li>
+            <% if(authority){ %>
+            <li><a href="/write">写文章</a></li>
+            <% } %>
+        </ul>
+    </nav>
+</section>
+</header>

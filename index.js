@@ -3,10 +3,13 @@ const app = require("./app");
 const _PORT = 3333;
 
 //中间键
+const cookieParser = require('./app/cookieParser');
 const staticServer = require('./app/staticServer');
 const apiServer = require('./app/api');
 const urlParser = require('./app/urlParser');
 const viewServer = require('./app/viewServer');
+
+app.use(cookieParser);
 app.use(urlParser);
 app.use(apiServer);
 app.use(staticServer);

@@ -17,9 +17,11 @@ class App{
 		return this.middlewareChain;
 	}
 	initServer(){
-		let correctResponse = (res,data,header) =>{
-			res.writeHead(200,'ok',header);
-			res.end(data);
+		let correctResponse = (ctx) =>{
+			let { res,resCtx} = ctx;
+			let { body,headers,statusCode,statusMessage} = resCtx;
+			res.writeHead(statusCode,statusMessage,headers);
+			res.end(body);
 		};
 
 		return (request,response)=>{
@@ -31,6 +33,9 @@ class App{
 				},
 				res:response,
 				resCtx:{
+					authority:false,
+					statusCode:200,
+					statusMessage:"ok",
 					headers:{
 						'x-powered-by':'node.js'
 					},
@@ -38,8 +43,7 @@ class App{
 				}
 			};
 			this.composeMiddleware(ctx).then(() =>{
-				let {body,headers} = ctx.resCtx;
-				correctResponse(response,body,headers);
+				correctResponse(ctx);
 			})
 		}
 	}
