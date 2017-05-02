@@ -8,7 +8,7 @@ let cookieParser = (ctx)=>{
 	let { resCtx,req } = ctx;
 	let { url,headers } = req;
 	let { cookie } = headers;
-	let cookieObj = cookie_parser.parse(cookie);
+	let cookieObj = cookie_parser.parse(cookie);   //将cookie转为对象
 	let authCookieSet = (time) =>{
 		resCtx.headers = Object.assign(resCtx.headers,{
 			"Set-Cookie":`auth=true;Max-Age=${time}`
@@ -18,6 +18,7 @@ let cookieParser = (ctx)=>{
 	return Promise.resolve({
 		then:(resolve,reject)=>{
 			if(cookieObj['auth']) {
+				//如果有这个cookie那么，给它续命
 				resCtx.authority = true;
 				authCookieSet(3600);
 			}
