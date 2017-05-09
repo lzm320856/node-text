@@ -5,8 +5,9 @@ const cookie_parser = require('cookie');
 const whiteNameList = ['/linzm'];        //白名单
 
 let cookieParser = (ctx)=>{
-	let { resCtx,req } = ctx;
-	let { url,headers } = req;
+	let { resCtx,req,reqCtx } = ctx;
+	let { headers } = req;
+	let { pathname } = reqCtx;
 	let { cookie } = headers;
 	let cookieObj = cookie_parser.parse(cookie);   //将cookie转为对象
 	let authCookieSet = (time) =>{
@@ -14,7 +15,6 @@ let cookieParser = (ctx)=>{
 			"Set-Cookie":`auth=true;Max-Age=${time}`
 		})
 	};
-
 	return Promise.resolve({
 		then:(resolve,reject)=>{
 			if(cookieObj['auth']) {
@@ -22,10 +22,10 @@ let cookieParser = (ctx)=>{
 				resCtx.authority = true;
 				authCookieSet(3600);
 			}
-			if(whiteNameList.indexOf(url) != -1){
+			if(whiteNameList.indexOf(pathname) != -1){
 				authCookieSet(3600);
 			}
-			if(url == '/logout'){
+			if(pathname == '/logout'){
 				authCookieSet(0);
 			}
 			resolve();

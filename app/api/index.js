@@ -2,30 +2,39 @@
 **	API静态数据分发服务器
 *   只处理后缀为.action的请求，通过不同情况给res.ctx赋值
 */
-let apiServer = (ctx)=>{
-	let { reqCtx,resCtx,res} = ctx;
-	let {url,method} = ctx.req;
-	method = method.toLowerCase();
-	let apiMap = {
-		"/user.action":{
-			"id":1,
-			"name":"赵日天",
-			"age":18,
-			"school":"断罪小学"
-		},
-		"/list.action":["first-blood",'double-kill','holy-shit']
-	};
+let Router = require('./router');
+let router = new Router();
+//获取分类列表
+router.get('/categoryList.action',ctx=>{
+	return {"a":1}
+});
+//增加分类
+router.get('/category.action',ctx=>{});
+//增加博客
+router.get('/blog.action',ctx=>{});
 
-	if(url.match('.action')){
-		if(method == "get"){
-			resCtx.body = JSON.stringify(apiMap[url]);
-		}else if(method == "post"){
-			let data = reqCtx.body;
-			data.code == '101' ? resCtx.body = JSON.stringify(apiMap[url]) : resCtx.body = "no resource";
+
+
+
+let apiServer = (ctx)=>{
+	let { reqCtx,resCtx } = ctx;
+	let { pathname,method } = reqCtx;
+	return Promise.resolve({
+		then:(resolve,reject)=>{
+			if(pathname.match('.action')){
+				return router.routes(ctx).then(val=>{
+					resCtx.body = JSON.stringify(val);
+					resCtx.headers = Object.assign(resCtx.headers,{
+						"Content-Type":"application/json"
+					});
+					resolve();
+				})
+			}else {
+				resolve();
+			}
 		}
-		res.setHeader("Content-Type","application/json");
-	}
-	return Promise.resolve();
+	})
+
 };
 
 module.exports = apiServer;

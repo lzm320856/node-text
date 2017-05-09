@@ -1,13 +1,14 @@
 /*
 **处理request的信息，将post的信息存入request.context中
  */
-const querystring = require('querystring');
 const Url = require('url');
 
 let urlParser = (ctx)=>{
 	let {req,reqCtx} = ctx;
 	let {url,method} = req;
 	method = method.toLowerCase();
+	reqCtx.pathname = Url.parse(url).pathname;
+	reqCtx.query = Url.parse(url,true).query;
 	return Promise.resolve({
 		then:(resolve,reject)=>{
 			reqCtx.method = method;
@@ -21,7 +22,6 @@ let urlParser = (ctx)=>{
 					resolve();
 				})
 			}else if(method == 'get'){
-				reqCtx.query = querystring.parse(Url.parse(url));
 				resolve();
 			}
 		}
